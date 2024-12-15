@@ -1,5 +1,3 @@
-Certainly! Here's a detailed and professional README template for your deep learning-based Human Action Recognition project using the UCF101 dataset.
-
 ---
 
 # Human Action Recognition using Deep Learning (UCF101 Dataset)
