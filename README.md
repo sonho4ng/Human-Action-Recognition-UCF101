@@ -106,7 +106,7 @@ pip install -r requirements.txt
 1. **Clone the repository:**
 
    ```
-   git clone https://github.com/yourusername/it3320e-human-action-recognition-ucf101.git
+   git clone https://github.com/xt2201/it3320e-human-action-recognition-ucf101.git
    cd it3320e-human-action-recognition-ucf101
    ```
 
@@ -119,6 +119,11 @@ pip install -r requirements.txt
    ```
 
    Alternatively, install required libraries individually using `pip`.
+   
+3. **Download checkpoints**
+   
+   Since our model checkpoints are larger than 100MB, please download them from the following Google Drive link:
+   [Checkpoint](https://drive.google.com/drive/folders/1GHyuOym3f6AzXiG8fcT6l5gtfjd1Nq65?usp=share_link)
 
 ---
 
@@ -130,8 +135,20 @@ pip install -r requirements.txt
 2. Run the training script to start training the model:
 
    ```
-   python train.py --dataset /path/to/UCF101 --epochs 50 --batch_size 32
+   python train.py --epochs 200 --batch_size 8 --device cuda --learning_rate 0.0001 --num_workers 4 --videos_per_class 50 --n_frames 10 --model resnet-lstm --dataset ucf101 --dataset_path <path_to_dataset>
    ```
+Parameters:
+
+--epochs (int, default: 200): Number of training epochs.
+--batch_size (int, default: 8): Size of each batch during training.
+--device (str, choices: ['cuda', 'cpu'], default: 'cuda'): Choose the device for training ('cuda' for GPU, 'cpu' for CPU).
+--learning_rate (float, default: 0.0001): Learning rate for the optimizer.
+--num_workers (int, default: 0): Number of worker processes for loading the data.
+--videos_per_class (int, default: 50): Number of videos per class to use for training.
+--n_frames (int, default: 10): Number of frames to extract from each video for training.
+--model (str, choices: ['resnet-lstm', 'resnet-fc], default: 'resnet-lstm'): Choose the model architecture.
+--dataset (str, choices: ['ucf101', 'ucf11'], default: 'ucf101'): Choose the dataset to use ('ucf101' or 'ucf11').
+--dataset_path (str): Path to the folder containing the dataset. Example: <Path>/UCF101/train/....
 
    You can adjust the `--epochs`, `--batch_size`, and other parameters based on your machine and dataset size.
 
@@ -173,12 +190,15 @@ The model is evaluated using several metrics, including:
 
 ## Results
 
-| Model                | Accuracy (%) | Precision | Recall | F1-score |
-|----------------------|--------------|-----------|--------|----------|
-| Pretrained ResNet + LSTM | 92.4%       | 0.91      | 0.93   | 0.92     |
-| 3D CNN Model           | 94.1%       | 0.92      | 0.95   | 0.93     |
+| Model                          | Accuracy (%) |
+|--------------------------------|--------------|
+| ResidualSE                     | 59.34        |
+| TSM                            | 70.93        |
+| ResNet50 + FC                  | 75.44        |
+| ResNet50 + biLSTM              | 85.05        |
+| Enhanced ResNet-3D             | 92.24        |
 
-The best results were achieved using a combination of 3D CNNs for spatial-temporal feature extraction, yielding an accuracy of 94.1% on the UCF101 test set.
+These results demonstrate the effectiveness of different architectures, with the **Enhanced ResNet-3D** model achieving the highest accuracy on the UCF101 dataset.
 
 ---
 
@@ -186,6 +206,6 @@ The best results were achieved using a combination of 3D CNNs for spatial-tempor
 
 - **UCF101 Dataset:** [UCF101 Dataset Homepage](https://www.crcv.ucf.edu/data/UCF101.php)
 - **Deep Learning Frameworks:** TensorFlow, PyTorch
-- **Research Papers:** [Convolutional 3D Networks for Action Recognition](https://arxiv.org/abs/1412.0767), [Action Recognition using LSTMs](https://arxiv.org/abs/1506.01826)
+- **Research Papers:** [](https://arxiv.org/abs/1412.0767), [](https://arxiv.org/abs/1506.01826)
 
 ---
