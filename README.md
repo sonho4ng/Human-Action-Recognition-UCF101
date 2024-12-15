@@ -139,16 +139,25 @@ pip install -r requirements.txt
    ```
 Parameters:
 
---epochs (int, default: 200): Number of training epochs.
---batch_size (int, default: 8): Size of each batch during training.
---device (str, choices: ['cuda', 'cpu'], default: 'cuda'): Choose the device for training ('cuda' for GPU, 'cpu' for CPU).
---learning_rate (float, default: 0.0001): Learning rate for the optimizer.
---num_workers (int, default: 0): Number of worker processes for loading the data.
---videos_per_class (int, default: 50): Number of videos per class to use for training.
---n_frames (int, default: 10): Number of frames to extract from each video for training.
---model (str, choices: ['resnet-lstm', 'resnet-fc], default: 'resnet-lstm'): Choose the model architecture.
---dataset (str, choices: ['ucf101', 'ucf11'], default: 'ucf101'): Choose the dataset to use ('ucf101' or 'ucf11').
---dataset_path (str): Path to the folder containing the dataset. Example: <Path>/UCF101/train/....
+- --epochs (int, default: 200): Number of training epochs.
+
+- --batch_size (int, default: 8): Size of each batch during training.
+
+- --device (str, choices: ['cuda', 'cpu'], default: 'cuda'): Choose the device for training ('cuda' for GPU, 'cpu' for CPU).
+
+- --learning_rate (float, default: 0.0001): Learning rate for the optimizer.
+
+- --num_workers (int, default: 0): Number of worker processes for loading the data.
+
+- --videos_per_class (int, default: 50): Number of videos per class to use for training.
+
+- --n_frames (int, default: 10): Number of frames to extract from each video for training.
+
+- --model (str, choices: ['resnet-lstm', 'resnet-fc], default: 'resnet-lstm'): Choose the model architecture.
+
+- --dataset (str, choices: ['ucf101', 'ucf11'], default: 'ucf101'): Choose the dataset to use ('ucf101' or 'ucf11').
+
+- --dataset_path (str): Path to the folder containing the dataset. Example: <Path>/UCF101/train/....
 
    You can adjust the `--epochs`, `--batch_size`, and other parameters based on your machine and dataset size.
 
@@ -162,19 +171,19 @@ This will generate accuracy metrics and visualize some test results, showing how
 
 ## Model Architecture
 
-This project uses a combination of CNNs and LSTMs (or 3D CNNs) for action recognition. Below is a brief description of the architecture:
+This project includes various models for human action recognition evaluated on the UCF101 dataset. Below are brief descriptions of each model:
 
-### Convolutional Neural Networks (CNNs)
+1. **ResidualSE**: This model incorporates residual connections with a squeeze-and-excitation (SE) block to improve feature recalibration. It is designed to enhance the representational power of convolutional neural networks for action recognition.
 
-- **Spatial Feature Extraction:** A pre-trained CNN (such as ResNet or VGG) is used to extract spatial features from individual frames of the video.
+2. **TSM (Temporal Shift Module)**: TSM introduces temporal shift operations to capture temporal dependencies in video data. This helps the model recognize actions over time by shifting and processing video frames efficiently.
 
-### Long Short-Term Memory (LSTM) Networks
+3. **ResNet50 + FC (Fully Connected)**: This model combines ResNet50, a deep convolutional neural network, with fully connected layers for classification. It leverages the strengths of both deep learning and fully connected networks for accurate action recognition.
 
-- **Temporal Feature Extraction:** LSTM layers capture the temporal dependencies between frames, making it possible to understand the sequence of actions.
+4. **ResNet50 + biLSTM (Bidirectional LSTM)**: The ResNet50 model is paired with a bidirectional LSTM layer to capture both past and future temporal dependencies in video data. This architecture allows the model to better understand complex motion patterns.
 
-### 3D Convolutional Networks (Optional)
+5. **Enhanced ResNet-3D Model**: The Enhanced ResNet-3D Model incorporates 3D convolutions to capture spatio-temporal features from video data. It enhances action recognition performance by effectively modeling the spatial and temporal information in video sequences.
 
-- **3D CNNs:** For more advanced feature extraction, 3D CNNs can be used, where convolutions are applied over both spatial dimensions (height and width) and the temporal dimension (time).
+
 
 ---
 
@@ -183,8 +192,7 @@ This project uses a combination of CNNs and LSTMs (or 3D CNNs) for action recogn
 The model is evaluated using several metrics, including:
 
 - **Accuracy:** The percentage of correctly classified actions.
-- **Confusion Matrix:** Shows the performance of the classification for each action category.
-- **Precision, Recall, F1-score:** Used for a detailed assessment of the model’s performance across different categories.
+
 
 ---
 
