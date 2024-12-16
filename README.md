@@ -131,7 +131,7 @@ pip install -r requirements.txt
 1. Ensure that you have the UCF101 dataset downloaded and properly organized.
 2. Run the training script to start training the model:
 
-   ```
+```
 python -m script.train \
     --epochs 100 \
     --batch_size 16 \
@@ -144,11 +144,11 @@ python -m script.train \
     --dataset ucf101 \
     --dataset_path /path/to/your/data \
     --use_wandb True
-   ```
+```
 
-or
+or:
 
-   ```
+```
 python3 -m script.train \
     --epochs 100 \
     --batch_size 16 \
@@ -161,7 +161,14 @@ python3 -m script.train \
     --dataset ucf101 \
     --dataset_path /path/to/your/data \
     --use_wandb True
-   ```
+```
+
+or just simple:
+
+```
+python3 -m script.train
+```
+and other parameters are set as default
 
 Parameters:
 
