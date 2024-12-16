@@ -83,7 +83,6 @@ The following libraries and frameworks are required for running the project:
 - NumPy
 - Matplotlib
 - Scikit-learn
-- Keras (if using TensorFlow)
 - h5py
 - tqdm
 - wandb
@@ -120,7 +119,7 @@ pip install -r requirements.txt
    
 3. **Download checkpoints**
    
-   Since our model checkpoints are larger than 100MB, please download them from the following Google Drive link:
+   Since our model checkpoints are larger than 100MB, please download them from the following Google Drive link and place them in the *checkpoint* directory found in the root directory:
    [Checkpoint](https://drive.google.com/drive/folders/1GHyuOym3f6AzXiG8fcT6l5gtfjd1Nq65?usp=share_link)
 
 ---
@@ -211,7 +210,7 @@ These results demonstrate the effectiveness of different architectures, with the
 ## Acknowledgments
 
 - **UCF101 Dataset:** [UCF101 Dataset Homepage](https://www.crcv.ucf.edu/data/UCF101.php)
-- **Deep Learning Frameworks:** TensorFlow, PyTorch
-- **Research Papers:** [](https://arxiv.org/abs/1412.0767), [](https://arxiv.org/abs/1506.01826)
+- **Deep Learning Frameworks:** PyTorch
+- **Research Papers:** [Learning Spatiotemporal Features with 3D Convolutional Networks](https://arxiv.org/abs/1412.0767), [](https://arxiv.org/abs/1506.01826)
 
 ---
