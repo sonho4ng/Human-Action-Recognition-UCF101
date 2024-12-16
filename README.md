@@ -132,29 +132,73 @@ pip install -r requirements.txt
 2. Run the training script to start training the model:
 
    ```
-   python train.py --epochs 200 --batch_size 8 --device cuda --learning_rate 0.0001 --num_workers 4 --videos_per_class 50 --n_frames 10 --model resnet-lstm --dataset ucf101 --dataset_path <path_to_dataset>
+python -m script.train \
+    --epochs 100 \
+    --batch_size 16 \
+    --device cuda \
+    --learning_rate 0.0005 \
+    --num_workers 4 \
+    --videos_per_class 30 \
+    --n_frames 20 \
+    --model resnet-lstm \
+    --dataset ucf101 \
+    --dataset_path /path/to/your/data \
+    --use_wandb True
    ```
+
+or
+
+   ```
+python3 -m script.train \
+    --epochs 100 \
+    --batch_size 16 \
+    --device cuda \
+    --learning_rate 0.0005 \
+    --num_workers 4 \
+    --videos_per_class 30 \
+    --n_frames 20 \
+    --model resnet-lstm \
+    --dataset ucf101 \
+    --dataset_path /path/to/your/data \
+    --use_wandb True
+   ```
+
 Parameters:
 
-- --epochs (int, default: 200): Number of training epochs.
+## Parameters
 
-- --batch_size (int, default: 8): Size of each batch during training.
+- **`--epochs`** (int, default: 200):  
+  Number of training epochs.
 
-- --device (str, choices: ['cuda', 'cpu'], default: 'cuda'): Choose the device for training ('cuda' for GPU, 'cpu' for CPU).
+- **`--batch_size`** (int, default: 8):  
+  Size of each batch during training.
 
-- --learning_rate (float, default: 0.0001): Learning rate for the optimizer.
+- **`--device`** (str, choices: ['cuda', 'cpu'], default: 'cpu'):  
+  Choose the device for training ('cuda' for GPU, 'cpu' for CPU).
 
-- --num_workers (int, default: 0): Number of worker processes for loading the data.
+- **`--learning_rate`** (float, default: 0.0001):  
+  Learning rate for the optimizer.
 
-- --videos_per_class (int, default: 50): Number of videos per class to use for training.
+- **`--num_workers`** (int, default: 0):  
+  Number of worker processes for loading the data.
 
-- --n_frames (int, default: 10): Number of frames to extract from each video for training.
+- **`--videos_per_class`** (int, default: 50):  
+  Number of videos per class to use for training.
 
-- --model (str, choices: ['resnet-lstm', 'resnet-fc], default: 'resnet-lstm'): Choose the model architecture.
+- **`--n_frames`** (int, default: 10):  
+  Number of frames to sample from each video.
 
-- --dataset (str, choices: ['ucf101', 'ucf11'], default: 'ucf101'): Choose the dataset to use ('ucf101' or 'ucf11').
+- **`--model`** (str, choices: ['resnet-lstm', 'residualSE', 'tsm', 'i3d', 'enhanced_r3d'], default: 'resnet-lstm'):  
+  Select the model architecture to use.
 
-- --dataset_path (str): Path to the folder containing the dataset. Example: <Path>/UCF101/train/....
+- **`--dataset`** (str, choices: ['ucf101', 'ucf11'], default: 'ucf101'):  
+  Select the dataset to use for training.
+
+- **`--dataset_path`** (str):  
+  Path to the folder containing the dataset. Example format: `<Path>/UCF101/train/...`.
+
+- **`--use_wandb`** (str, choices: ['True', 'False'], default: 'False'):  
+  Specify whether to enable Weights & Biases (wandb) for experiment tracking (`True` or `False`).
 
    You can adjust the `--epochs`, `--batch_size`, and other parameters based on your machine and dataset size.
 
