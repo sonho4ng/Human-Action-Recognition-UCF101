@@ -1,0 +1,48 @@
+{
+    "os": "macOS-15.0-arm64-arm-64bit",
+    "python": "3.12.3",
+    "heartbeatAt": "2024-12-16T03:57:43.749093",
+    "startedAt": "2024-12-16T03:57:42.338052",
+    "docker": null,
+    "cuda": null,
+    "args": [],
+    "state": "running",
+    "program": "-m script.train",
+    "codePathLocal": null,
+    "git": {
+        "remote": "https://github.com/xt2201/it3320e-human-action-recognition-ucf101.git",
+        "commit": "ed0c8ae1e589aea49d287725ac8dfcda4a7fa4f5"
+    },
+    "email": "thanh.20040803@gmail.com",
+    "root": "/Users/nguyentrithanh/it3320e-human-action-recognition-ucf101",
+    "host": "MacBook-Pro-cua-Nguyen-5.local",
+    "username": "nguyentrithanh",
+    "executable": "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+    "cpu_count": 8,
+    "cpu_count_logical": 8,
+    "cpu_freq": {
+        "current": 3504,
+        "min": 600,
+        "max": 3504
+    },
+    "cpu_freq_per_core": [
+        {
+            "current": 3504,
+            "min": 600,
+            "max": 3504
+        }
+    ],
+    "disk": {
+        "/": {
+            "total": 228.27386474609375,
+            "used": 9.93990707397461
+        }
+    },
+    "gpuapple": {
+        "type": "Apple M2",
+        "vendor": "sppci_vendor_Apple"
+    },
+    "memory": {
+        "total": 8.0
+    }
+}

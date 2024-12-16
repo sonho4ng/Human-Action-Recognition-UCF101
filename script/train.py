@@ -5,18 +5,22 @@ import torch.optim as optim
 from torch.utils.data import DataLoader
 from sklearn.model_selection import train_test_split
 from tqdm import tqdm
-import matplotlib.pyplot as plt
-import seaborn as sns
-from sklearn.metrics import confusion_matrix
 import wandb
 import os
 import sys
 
 from dataset.UCF101 import VideoDataset
 from models.resnet_lstm import ResNetLSTM
+from models.ResidualSE import ResidualSE
+from models.tsm import models
+from models.i3d_shufflenet import EnhancedI3DShuffleNet
+from models.enhanced_r3d import R3DModel
+
 
 import argparse
 
+import ssl
+ssl._create_default_https_context = ssl._create_unverified_context
 
 parser = argparse.ArgumentParser(description="Training parameters")
 
@@ -27,19 +31,35 @@ parser.add_argument("--learning_rate", type=float, default=0.0001, help="Learnin
 parser.add_argument("--num_workers", type=int, default=0, help="Number of workers for data loading")
 parser.add_argument("--videos_per_class", type=int, default=50, help="Number of videos per class")
 parser.add_argument("--n_frames", type=int, default=10, help="Number of frames per video")
-parser.add_argument("--model", choices=['resnet-lstm', ''], default='resnet-lstm', help="Choose models: ")
+parser.add_argument("--model", choices=['resnet-lstm', 'residualSE', 'tsm', 'i3d', 'enhanced_r3d'], default='resnet-lstm', help="Choose models: ")
 parser.add_argument("--dataset", choices=['ucf101', 'ucf11'], default='ucf101', help="Choose datasets: ucf101 or ucf11")
-parser.add_argument("--dataset_path", choices=['ucf101', 'ucf11'], default='ucf101', help="Path to the folder that contain the dataset: <Path>/UCF101/train/... ")
+parser.add_argument("--dataset_path", type=str, default='/Users/nguyentrithanh/it3320e-human-action-recognition-ucf101/data', help="Path to the folder that contain the dataset: <Path>/UCF101/train/... ")
+parser.add_argument("--use_wandb", choices=['True', 'False'], default='False', help="Choosing to use wandb or not")
 
 args = parser.parse_args()
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
-resnet_lstm_path = os.path.abspath(os.path.join(script_dir, "../checkpoint/resnet-lstm.pth"))
 
-if os.path.exists(resnet_lstm_path):
-    print(f"Checkpoint path: {resnet_lstm_path}")
-else:
-    print("Checkpoint file does not exist!")
+def check_path(path: str) -> None:
+    if os.path.exists(path):
+        print(f"Checkpoint path: {path}")
+    else:
+        print("Checkpoint file does not exist!")
+
+def choose_model(model_name: str) -> object:
+    if model_name == 'resnet-lstm':
+        model = ResNetLSTM(num_classes=CFG.num_classes).to(CFG.device)
+    elif model_name == 'residualSE':
+        model = ResidualSE(num_classes=CFG.num_classes).to(CFG.device)
+    elif model_name == 'tsm':
+        model = models.TSN(num_classes=CFG.num_classes, num_segments=CFG.n_frames, modality="RGB",
+                   base_model='resnet50', before_softmax=False,
+                   is_shift=True, shift_place='blockres').to(CFG.device)
+    elif model_name == 'i3d':
+        model = EnhancedI3DShuffleNet(CFG.num_classes)
+    elif model_name == 'enhanced_r3d':
+        model = R3DModel(num_classes=CFG.num_classes, pretrained='update_r3d', dropout_prob=0.5)
+    return model
 
 class CFG:
     epochs = args.epochs
@@ -79,7 +99,11 @@ class CFG:
     elif dataset_name == "ucf11":
         num_classes = 11
 
+    checkpoint_path = os.path.abspath(os.path.join(script_dir, f"../checkpoint/{model_name}.pth"))
+    check_path(checkpoint_path)
+    
     dataset_path = args.dataset_path
+    use_wandb = args.use_wandb
 
 def train_epoch(model, dataloader, criterion, optimizer, device):
     model.train()
@@ -135,18 +159,19 @@ def validate(model, dataloader, criterion, device):
     return val_loss, val_acc, all_preds, all_labels
 
 def main():
-    wandb.login(key='<YOUR_KEY>')
-    wandb.init(
-        project="DL Score",
-        config={
-            "batch_size": CFG.batch_size,
-            "learning_rate": CFG.learning_rate,
-            "epochs": CFG.epochs,
-            "clip_duration": CFG.n_frames,
-            "model": CFG.model_name,
-            "num_classes": CFG.num_classes,
-        }
-    )
+    if CFG.use_wandb == "True":
+        wandb.login(key=os.environ["WANDB"])
+        wandb.init(
+            project="DL Score",
+            config={
+                "batch_size": CFG.batch_size,
+                "learning_rate": CFG.learning_rate,
+                "epochs": CFG.epochs,
+                "clip_duration": CFG.n_frames,
+                "model": CFG.model_name,
+                "num_classes": CFG.num_classes,
+            }
+        )
     
 
     # Load dataset
@@ -181,7 +206,7 @@ def main():
     )
 
     # Initialize model
-    model = ResNetLSTM(num_classes=len(CFG.classes)).to(CFG.device)
+    model = choose_model(CFG.model_name)
     
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=CFG.learning_rate)
@@ -207,19 +232,20 @@ def main():
         # Update learning rate
         scheduler.step(val_loss)
         
-        wandb.log({
-        "Epoch": epoch + 1,
-        "Train Loss": train_loss,
-        "Train Accuracy": train_acc,
-        "Validation Loss": val_loss,
-        "Validation Accuracy": val_acc,
-        "Learning Rate": optimizer.param_groups[0]['lr']
-        })
+        if CFG.use_wandb == 'True':
+            wandb.log({
+            "Epoch": epoch + 1,
+            "Train Loss": train_loss,
+            "Train Accuracy": train_acc,
+            "Validation Loss": val_loss,
+            "Validation Accuracy": val_acc,
+            "Learning Rate": optimizer.param_groups[0]['lr']
+            })
         
         # Save best model
         if val_acc > best_val_acc:
             best_val_acc = val_acc
-            checkpoint_path = resnet_lstm_path
+            checkpoint_path = CFG.checkpoint_path
 
             torch.save({
             'epoch': epoch + 1,
@@ -238,20 +264,9 @@ def main():
         print(f'Train Loss: {train_loss:.4f} Train Acc: {train_acc:.2f}%')
         print(f'Val Loss: {val_loss:.4f} Val Acc: {val_acc:.2f}%')
 
-        # Plot confusion matrix
-        if epoch == CFG.epochs - 1:
-            plot_confusion_matrix(all_labels, all_preds, CFG.classes)
 
     return model, history
 
-def plot_confusion_matrix(y_true, y_pred, class_names):
-    cm = confusion_matrix(y_true, y_pred)
-    plt.figure(figsize=(len(class_names), len(class_names)))
-    sns.heatmap(cm, annot=True, fmt="d", cmap="Blues", 
-                xticklabels=class_names, yticklabels=class_names)
-    plt.xlabel('Predicted')
-    plt.ylabel('True')
-    plt.show()
 
 if __name__ == "__main__":
     model, history = main()

@@ -1,24 +1,10 @@
-import os
-import logging
-from typing import List, Tuple, Dict, Optional
-import glob
-import random
-import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
+from typing import List, Tuple, Dict, Optional, Union
+import math
 import torch
 import torch.nn as nn
-import torch.optim as optim
-from torch.utils.data import Dataset, DataLoader
-import torchvision.transforms as transforms
+import torch.nn.functional as F
 from torchvision.models import shufflenet_v2_x1_0
 from torchvision.models.video import r3d_18, R3D_18_Weights 
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import confusion_matrix, classification_report, precision_recall_fscore_support
-import cv2
-from tqdm import tqdm
-import gc
 
 class SEBlock(nn.Module):
     """Squeeze-and-Excitation Block."""

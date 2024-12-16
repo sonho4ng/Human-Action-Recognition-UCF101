@@ -2,7 +2,8 @@ import numpy as np
 import torch
 import torchvision
 from torch import nn
-from basic_ops import ConsensusModule
+from .basic_ops import ConsensusModule
+from .temporal_shift import make_temporal_shift
 from torch.nn.init import normal_, constant_
 
 
@@ -85,7 +86,6 @@ class TSN(nn.Module):
             self.base_model = getattr(torchvision.models, base_model)(True if self.pretrain == 'imagenet' else False)
             if self.is_shift:
                 print('Adding temporal shift...')
-                from temporal_shift import make_temporal_shift
                 make_temporal_shift(self.base_model, self.num_segments, n_div=self.shift_div, place=self.shift_place)
 
             self.base_model.last_layer_name = 'fc'
