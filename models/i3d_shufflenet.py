@@ -6,6 +6,8 @@ import torch.nn.functional as F
 from torchvision.models import shufflenet_v2_x1_0
 from torchvision.models.video import r3d_18, R3D_18_Weights 
 
+import math
+
 class SEBlock(nn.Module):
     """Squeeze-and-Excitation Block."""
     def __init__(self, channel, reduction=16):
@@ -257,6 +259,7 @@ class EnhancedI3DShuffleNet(nn.Module):
     
     def forward(self, x: torch.Tensor) -> Union[torch.Tensor, Tuple[torch.Tensor, torch.Tensor]]:
         # I3D feature extraction
+        x = x.permute(0,2,1,3,4)
         i3d_features = self.i3d_backbone(x)  # [B, C_i3d, T, H, W]
         
         # ShuffleNet feature extraction
@@ -288,9 +291,29 @@ class EnhancedI3DShuffleNet(nn.Module):
         output = self.classifier(fused_features)  # [B, num_classes, T, H, W]
         output = F.adaptive_avg_pool3d(output, 1).view(output.size(0), -1)  # [B, num_classes]
         
-        # Return with auxiliary loss if enabled
         if self.aux_loss and self.training:
             aux_output = self.aux_classifier(i3d_features)  # [B, num_classes]
             return output, aux_output
                 
         return output
+
+# def create_model(config) -> nn.Module:
+#     """Factory method to create appropriate video classification model."""
+#     num_classes = len(config.classes)
+
+#     if config.model_type == 'i3dshufflenet':
+#         model = EnhancedI3DShuffleNet(
+#             num_classes=num_classes,
+#             pretrained=config.pretrained,
+#             dropout_prob=0.5,
+#             temporal_module=config.temporal_module,  # 'i3d', 'shuffle', or 'transformer'
+#             use_attention=config.use_attention,
+#             aux_loss=config.aux_loss,
+#             transformer_layers=config.transformer_layers,
+#             transformer_heads=config.transformer_heads
+#         )
+#     else:
+#         raise ValueError(f"Unsupported model type: {config.model_type}")
+
+#     model = model.to(config.device)
+#     return model

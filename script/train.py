@@ -16,6 +16,7 @@ from models.tsm import models
 from models.i3d_shufflenet import EnhancedI3DShuffleNet
 from models.enhanced_r3d import R3DModel
 from models.r21d import R2Plus1DClassifier
+from models.resnet_fnn import ResNetFNN
 
 
 import argparse
@@ -32,7 +33,7 @@ parser.add_argument("--learning_rate", type=float, default=0.0001, help="Learnin
 parser.add_argument("--num_workers", type=int, default=0, help="Number of workers for data loading")
 parser.add_argument("--videos_per_class", type=int, default=50, help="Number of videos per class")
 parser.add_argument("--n_frames", type=int, default=10, help="Number of frames per video")
-parser.add_argument("--model", choices=['resnet-lstm', 'residualSE', 'tsm', 'i3d', 'enhanced_r3d', 'r21d'], default='resnet-lstm', help="Choose models: ")
+parser.add_argument("--model", choices=['resnet-lstm', 'residualSE', 'tsm', 'i3d', 'enhanced_r3d', 'r21d', 'resnet-fnn'], default='resnet-lstm', help="Choose models: ")
 parser.add_argument("--dataset", choices=['ucf101', 'ucf11'], default='ucf101', help="Choose datasets: ucf101 or ucf11")
 parser.add_argument("--dataset_path", type=str, default='/Users/nguyentrithanh/it3320e-human-action-recognition-ucf101/data', help="Path to the folder that contain the dataset: <Path>/UCF101/train/... ")
 parser.add_argument("--use_wandb", choices=['True', 'False'], default='False', help="Choosing to use wandb or not")
@@ -50,6 +51,8 @@ def check_path(path: str) -> None:
 def choose_model(model_name: str) -> object:
     if model_name == 'resnet-lstm':
         model = ResNetLSTM(num_classes=CFG.num_classes).to(CFG.device)
+    elif model_name == 'resnet-fnn':
+        model = ResNetFNN(num_classes=CFG.num_classes).to(CFG.device)
     elif model_name == 'residualSE':
         model = ResidualSE(num_classes=CFG.num_classes).to(CFG.device)
     elif model_name == 'tsm':

@@ -8,21 +8,51 @@ import os
 
 from dataset.UCF101 import VideoDataset
 from models.resnet_lstm import ResNetLSTM
+from models.ResidualSE import ResidualSE
+from models.tsm import models
+from models.i3d_shufflenet import EnhancedI3DShuffleNet
+from models.enhanced_r3d import R3DModel
+from models.r21d import R2Plus1DClassifier
+from models.resnet_fnn import ResNetFNN
+
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
-resnet_lstm_path = os.path.abspath(os.path.join(script_dir, "../checkpoint/resnet-lstm.pth"))
 
-if os.path.exists(resnet_lstm_path):
-    print(f"Checkpoint path: {resnet_lstm_path}")
-else:
-    print("Checkpoint file does not exist!")
+def check_path(path: str) -> None:
+    if os.path.exists(path):
+        print(f"Checkpoint path: {path}")
+    else:
+        print("Checkpoint file does not exist!")
 
+def choose_model(model_name: str) -> object:
+    if model_name == 'resnet-lstm':
+        model = ResNetLSTM(num_classes=CFG.num_classes).to(CFG.device)
+    elif model_name == 'resnet-fnn':
+        model = ResNetFNN(num_classes=CFG.num_classes).to(CFG.device)
+    elif model_name == 'residualSE':
+        model = ResidualSE(num_classes=CFG.num_classes).to(CFG.device)
+    elif model_name == 'tsm':
+        model = models.TSN(num_classes=CFG.num_classes, num_segments=CFG.n_frames, modality="RGB",
+                   base_model='resnet50', before_softmax=False,
+                   is_shift=True, shift_place='blockres').to(CFG.device)
+    elif model_name == 'i3d':
+        model = EnhancedI3DShuffleNet(CFG.num_classes)
+    elif model_name == 'enhanced_r3d':
+        model = R3DModel(num_classes=CFG.num_classes, pretrained='update_r3d', dropout_prob=0.5)
+    elif model_name == 'r21d':
+        model = R2Plus1DClassifier(num_classes=CFG.num_classes, layer_sizes=[2,2,2,2]).to(CFG.device)
+    return model
 
 import argparse
 
 parser = argparse.ArgumentParser(description="Inferred Video Path")
 
 parser.add_argument("--infer_path", type=str, required=True)
+parser.add_argument("--model", choices=['resnet-lstm', 'residualSE', 'tsm', 'i3d', 'enhanced_r3d', 'r21d', 'resnet-fnn'], default='resnet-lstm', help="Choose models: ")
+parser.add_argument("--dataset", choices=['ucf101', 'ucf11'], default='ucf101', help="Choose datasets: ucf101 or ucf11")
+
+
+
 args = parser.parse_args()
 infer_path = args.infer_path
 
@@ -52,6 +82,17 @@ class CFG:
         "UnevenBars", "VolleyballSpiking", "WalkingWithDog", "WallPushups", "WritingOnBoard",
         "YoYo"
     ]
+    model_name = args.model
+    checkpoint_path = os.path.abspath(os.path.join(script_dir, f"../checkpoint/{model_name}.pth"))
+    dataset_name = args.dataset
+
+    if dataset_name == "ucf101":
+        num_classes = 101
+    elif dataset_name == "ucf11":
+        num_classes = 11
+
+    check_path(checkpoint_path)
+
 
 def main():
     # Load dataset
@@ -66,10 +107,11 @@ def main():
     infer_dataset = VideoDataset(file_paths, targets)
     infer_loader = DataLoader(infer_dataset, batch_size=1)
 
-
     # Initialize model
-    model = ResNetLSTM(num_classes=len(CFG.classes)).to(CFG.device)
-    checkpoint = torch.load(resnet_lstm_path, weights_only=True, map_location=CFG.device)
+    model = choose_model(CFG.model_name)
+    checkpoint = torch.load(CFG.checkpoint_path, 
+                            weights_only=True, 
+                            map_location=CFG.device)
     model.load_state_dict(checkpoint['model_state_dict'])  
 
     model.eval()
