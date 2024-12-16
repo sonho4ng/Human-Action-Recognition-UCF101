@@ -142,7 +142,7 @@ python -m script.train \
     --n_frames 20 \
     --model resnet-lstm \
     --dataset ucf101 \
-    --dataset_path /path/to/your/data \
+    --dataset_path <path-to-your-data> \
     --use_wandb True
 ```
 
@@ -159,18 +159,17 @@ python3 -m script.train \
     --n_frames 20 \
     --model resnet-lstm \
     --dataset ucf101 \
-    --dataset_path /path/to/your/data \
+    --dataset_path <path-to-your-data> \
     --use_wandb True
 ```
 
-or just simple:
+or just simply run:
 
 ```
 python3 -m script.train
 ```
 and other parameters are set as default
 
-Parameters:
 
 ## Parameters
 
@@ -211,7 +210,18 @@ Parameters:
 
 ### Testing the Model
 
-Once training is complete, open the notebook demo.ipynb to evaluate the model's performance:
+Once training is complete or if you simply want to test the pretrained model, run the inference script:
+```
+python3 -m script.infer \
+    --infer_path <video-path-here> \
+    --model resnet-lstm \
+    --dataset ucf101
+```
+The model and dataset parameters are specified similarly to above, while `infer_path` requires the path of the video to be inferred from.
+You can also run the following for simplicity:
+```
+python3 -m script.infer --infer_path <video-path-here>
+```
 
 This will generate accuracy metrics and visualize some test results, showing how well the model can recognize actions from the UCF101 test set.
 
