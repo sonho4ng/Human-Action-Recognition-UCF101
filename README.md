@@ -217,13 +217,20 @@ python3 -m script.infer \
     --model resnet-lstm \
     --dataset ucf101
 ```
-The model and dataset parameters are specified similarly to above, while `infer_path` requires the path of the video to be inferred from.
+The model and dataset parameters are specified similarly to above, while `infer_path` requires the path of the video to be inferred from. You can use some provided clips in the `dataset` directory; just copy the path of a video and paste it after `--infer_path`.
+
 You can also run the following for simplicity:
 ```
 python3 -m script.infer --infer_path <video-path-here>
 ```
 
-This will generate accuracy metrics and visualize some test results, showing how well the model can recognize actions from the UCF101 test set.
+This will generate accuracy metrics of some top classes predicted by the model, showing how well the model can recognize actions from the UCF101 test set.
+
+A GUI demo can also be explored by running:
+```
+streamlit run demo.py
+```
+You can select a video to load for inference using the ResNet-LSTM model and observe predictions frame-by-frame.
 
 ---
 
