@@ -265,7 +265,7 @@ The model is evaluated using several metrics, including:
 
 | Model                          | Accuracy (%) |
 |--------------------------------|--------------|
-| ResidualSE                     | 59.34        |
+| ResidualSE                     | 69.34        |
 | TSM                            | 70.93        |
 | ResNet50 + FC                  | 75.44        |
 | ResNet50 + biLSTM              | 85.05        |
