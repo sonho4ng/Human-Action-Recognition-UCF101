@@ -103,8 +103,8 @@ pip install -r requirements.txt
 1. **Clone the repository:**
 
    ```
-   git clone https://github.com/xt2201/it3320e-human-action-recognition-ucf101.git
-   cd it3320e-human-action-recognition-ucf101
+   git clone https://github.com/sonho4ng/Human-Action-Recognition-UCF101.git
+   cd Human-Action-Recognition-UCF101
    ```
 
 2. **Install dependencies:**
