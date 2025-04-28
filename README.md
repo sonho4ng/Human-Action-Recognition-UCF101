@@ -197,9 +197,6 @@ and other parameters are set as default
 - **`--model`** (str, choices: ['resnet-lstm', 'residualSE', 'tsm', 'i3d', 'enhanced_r3d'], default: 'resnet-lstm'):  
   Select the model architecture to use.
 
-- **`--dataset`** (str, choices: ['ucf101', 'ucf11'], default: 'ucf101'):  
-  Select the dataset to use for training.
-
 - **`--dataset_path`** (str):  
   Path to the folder containing the dataset. Example format: `<Path>/UCF101/train/...`.
 
